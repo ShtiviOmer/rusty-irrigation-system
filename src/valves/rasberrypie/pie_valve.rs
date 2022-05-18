@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::valve_controller::valve_trait::ValveTrait;
 use rppal::gpio::{Gpio, OutputPin};
 
@@ -10,7 +12,7 @@ impl PieValve {
         let gpio = Gpio::new().map_err(|e| PieValveError::PermissionDenied(e.to_string()))?;
         let valve_output = gpio
             .get(valve_pin_output)
-            .map_err(|e| PieValveError::PinNotAvialable(e.to_string()))?
+            .map_err(|e| PieValveError::PinNotAvailable(e.to_string()))?
             .into_output();
         Ok(Self { valve_output })
     }
@@ -25,9 +27,16 @@ impl ValveTrait for PieValve {
     }
 }
 
-
 #[derive(Debug)]
 pub enum PieValveError {
     PermissionDenied(String),
-    PinNotAvialable(String),
+    PinNotAvailable(String),
+}
+impl fmt::Display for PieValveError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            PieValveError::PermissionDenied(s) => write!(f, "Permission denied: {}", s),
+            PieValveError::PinNotAvailable(s) => write!(f, "Pin not available: {}", s),
+        }
+    }
 }
