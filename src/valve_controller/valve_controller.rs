@@ -1,10 +1,7 @@
 use crate::valve_controller::valve_trait::ValveTrait;
-use rppal::gpio::{Gpio, OutputPin};
-use std::ops::DerefMut;
-use std::sync::Arc;
+
 use tokio;
 use tokio::sync::mpsc;
-use tokio::sync::mpsc::Sender;
 
 pub struct ValveController {
     valve: Box<dyn ValveTrait + Send + Sync>,
