@@ -3,27 +3,16 @@ use crate::valve_controller::valve_trait::ValveTrait;
 use tokio;
 use tokio::sync::mpsc;
 
-pub struct ValveController {
-    valve: Box<dyn ValveTrait + Send + Sync>,
-}
-
-impl ValveController {
-    fn new(valve: Box<dyn ValveTrait + Send + Sync>) -> Self {
-        Self { valve }
-    }
-}
-
-pub fn start(valve: Box<dyn ValveTrait + Send + Sync>) -> mpsc::Sender<ValveControllerMessage> {
-    let mut valve_controller = ValveController::new(valve);
+pub fn start(mut valve: Box<dyn ValveTrait + Send + Sync>) -> mpsc::Sender<ValveControllerMessage> {
     let (tx, mut rx) = mpsc::channel(100);
     tokio::spawn(async move {
         loop {
             match rx.recv().await {
                 Some(ValveControllerMessage::Open) => {
-                    valve_controller.valve.open();
+                    valve.open();
                 }
                 Some(ValveControllerMessage::Close) => {
-                    valve_controller.valve.close();
+                    valve.close();
                 }
                 None => (),
             }
@@ -36,4 +25,26 @@ pub fn start(valve: Box<dyn ValveTrait + Send + Sync>) -> mpsc::Sender<ValveCont
 pub enum ValveControllerMessage {
     Open,
     Close,
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::valves::mock_valve::mock_valve::{MockValve, MockValveAction};
+
+    use super::*;
+
+    #[tokio::test]
+    async fn test_start() {
+        let (tx_open_command, mut rx_open_commands) = mpsc::channel(100);
+        let valve = MockValve::new(tx_open_command);
+        let send_valve_command = start(Box::new(valve));
+        send_valve_command
+            .try_send(ValveControllerMessage::Open)
+            .unwrap();
+        assert_eq!(
+            rx_open_commands.recv().await.unwrap(),
+            MockValveAction::Open
+        );
+    }
 }

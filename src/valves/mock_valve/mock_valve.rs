@@ -20,7 +20,7 @@ impl ValveTrait for MockValve {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Eq, PartialEq)]
 pub enum MockValveAction {
     Open,
     Close,
