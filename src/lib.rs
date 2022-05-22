@@ -1,13 +1,10 @@
 mod valve_controller;
 mod valves;
-// mod watering_clock;
+mod watering_clock;
 
-use crate::valve_controller::valve_controller::{
-    start as valve_controller_start, ValveControllerMessage,
-};
+use crate::valve_controller::valve_controller::start as valve_controller_start;
 
-use std::{thread, time::Duration};
-
+use chrono::NaiveTime;
 use tokio::sync::mpsc;
 
 use crate::valve_controller::valve_trait::ValveTrait;
@@ -36,6 +33,8 @@ pub enum ValveType {
 }
 
 pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    let mut handles = Vec::new();
+
     let valve = match config.get_valve_type() {
         ValveType::RaspberryPie => get_valve_raspberry_pie()?,
         ValveType::Mock => {
@@ -45,9 +44,18 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
     };
 
     let tx = valve_controller_start(valve);
-    tx.try_send(ValveControllerMessage::Open)?;
-    thread::sleep(Duration::from_secs(30));
-    tx.try_send(ValveControllerMessage::Close)?;
+    handles.push(
+        watering_clock::watering_clock::start(
+            tx,
+            chrono::Duration::days(1),
+            NaiveTime::from_hms(9, 0, 0),
+            chrono::Duration::minutes(30),
+        )
+        .await
+        .map_err(|e| Box::new(e))?,
+    );
+
+    futures::future::join_all(handles).await;
     Ok(())
 }
 

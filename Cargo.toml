@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 rppal = "0.13.1"
 tokio = { version = "1", features = ["full"] }
+chrono = { version = "0.4"}
+tracing = {version = "0.1"}
+tracing-subscriber = { version = "0.3"}
+futures = { version = "0.3"}
