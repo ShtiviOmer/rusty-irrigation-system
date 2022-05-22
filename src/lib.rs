@@ -2,15 +2,15 @@ mod valve_controller;
 mod valves;
 mod watering_clock;
 
-use crate::valve_controller::valve_controller::start as valve_controller_start;
+use crate::valve_controller::start as valve_controller_start;
 
 use chrono::NaiveTime;
 use tokio::sync::mpsc;
 
 use crate::valve_controller::valve_trait::ValveTrait;
-use crate::valves::rasberrypie::pie_valve::PieValve;
+use crate::valves::rasberrypie::PieValve;
 
-use valves::mock_valve::mock_valve::{MockValve, MockValveAction};
+use valves::mock_valve::{MockValve, MockValveAction};
 
 use std::error::Error;
 
@@ -46,7 +46,7 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let tx = valve_controller_start(valve);
     handles.push(
-        watering_clock::watering_clock::start(
+        watering_clock::start(
             tx,
             chrono::Duration::days(1),
             NaiveTime::from_hms(9, 0, 0),
