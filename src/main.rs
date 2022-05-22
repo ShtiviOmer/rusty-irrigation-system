@@ -1,6 +1,5 @@
 use rusty_irrigation_system::{Config, ValveType};
 use std::process;
-use tokio;
 use tracing::info;
 
 #[tokio::main]

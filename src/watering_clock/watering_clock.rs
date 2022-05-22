@@ -29,9 +29,17 @@ pub async fn start(
     Ok(tokio::spawn(async move {
         loop {
             open_valve_time.tick().await;
-            tx.send(ValveControllerMessage::Open).await;
+            tracing::info!("Opening Valve");
+            if let Err(e) = tx.send(ValveControllerMessage::Open).await {
+                tracing::error!("Error sending open valve command: {}", e);
+                continue;
+            }
             close_valve_time.tick().await;
-            tx.send(ValveControllerMessage::Close).await;
+            tracing::info!("Closing Valve");
+            if let Err(e) = tx.send(ValveControllerMessage::Close).await {
+                tracing::error!("Error sending close valve command: {}", e);
+                continue;
+            }
         }
     })
     .instrument(info_span!("watering_clock")))

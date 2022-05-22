@@ -39,6 +39,7 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
         ValveType::RaspberryPie => get_valve_raspberry_pie()?,
         ValveType::Mock => {
             let (tx, rx) = mpsc::channel(100);
+            handles.push(MockValve::log_valve_commands(rx));
             get_valve_mock(tx)
         }
     };

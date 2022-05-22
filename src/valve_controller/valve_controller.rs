@@ -9,9 +9,11 @@ pub fn start(mut valve: Box<dyn ValveTrait + Send + Sync>) -> mpsc::Sender<Valve
         loop {
             match rx.recv().await {
                 Some(ValveControllerMessage::Open) => {
+                    tracing::debug!("Opening valve");
                     valve.open();
                 }
                 Some(ValveControllerMessage::Close) => {
+                    tracing::debug!("Closing valve");
                     valve.close();
                 }
                 None => (),
