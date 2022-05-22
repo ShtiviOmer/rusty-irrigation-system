@@ -7,8 +7,11 @@ edition = "2021"
 
 [dependencies]
 rppal = "0.13.1"
-tokio = { version = "1", features = ["full"] }
+tokio = { version = "1", features = ["rt", "time", "macros", "sync"] }
 chrono = { version = "0.4"}
-tracing = {version = "0.1"}
-tracing-subscriber = { version = "0.3"}
+tracing = {version = "0.1", features = ["log", "std"]}
+tracing-subscriber = { version = "0.3", features = ["fmt"]}
 futures = { version = "0.3"}
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
