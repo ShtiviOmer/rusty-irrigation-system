@@ -53,7 +53,7 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
             chrono::Duration::minutes(30),
         )
         .await
-        .map_err(|e| Box::new(e))?,
+        .map_err(Box::new)?,
     );
 
     futures::future::join_all(handles).await;
