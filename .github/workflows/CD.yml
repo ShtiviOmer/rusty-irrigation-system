@@ -1,7 +1,7 @@
 name: CD
 
 on:
-  release: [created]
+  release: [published]
 
 env:
   CARGO_TERM_COLOR: always
