@@ -14,4 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: compile
-        run: cargo release --target armv7-unknown-linux-gnueabihf
+        run: cargo build --release --target armv7-unknown-linux-gnueabihf
