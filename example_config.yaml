@@ -1,0 +1,6 @@
+valve_type: RaspberryPie
+gpio_pins: 4
+watering_clock:
+  start_time: 05:00
+  duration: 30
+  interval: 24
