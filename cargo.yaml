@@ -1,0 +1,4 @@
+valve_type: Mock
+watering_clock:
+  start_time: 08:30
+  duration: 30m

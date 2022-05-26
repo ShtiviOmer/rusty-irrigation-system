@@ -7,11 +7,13 @@ edition = "2021"
 
 [dependencies]
 rppal = "0.13.1"
-tokio = { version = "1", features = ["rt", "time", "macros", "sync"] }
-chrono = { version = "0.4"}
+tokio = { version = "1", features = ["rt", "time", "macros", "sync", "rt-multi-thread"] }
+chrono = "0.4"
 tracing = {version = "0.1", features = ["log", "std"]}
 tracing-subscriber = { version = "0.3", features = ["fmt"]}
-futures = { version = "0.3"}
+futures = "0.3"
+serde = {version = "1.0", features = ["derive"]}
+serde_yaml = "0.8"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
