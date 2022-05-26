@@ -1,17 +1,17 @@
 name: CD
 
 on:
-  release: [created]
+  release:
+    types: [created]
 
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: compile
-      run: cargo release --target armv7-unknown-linux-gnueabihf
+      - uses: actions/checkout@v3
+      - name: compile
+        run: cargo release --target armv7-unknown-linux-gnueabihf
