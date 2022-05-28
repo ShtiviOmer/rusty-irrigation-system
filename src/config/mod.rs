@@ -39,3 +39,12 @@ pub struct WateringClockConfig {
     /// Interval of when opening the clock in hours
     pub interval: i64,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test_example_file() {
+        let _config = load_from_yaml("example_config.yaml".to_owned()).unwrap();
+    }
+}

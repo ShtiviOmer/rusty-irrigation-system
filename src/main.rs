@@ -32,6 +32,6 @@ fn start_tracing() {
 fn get_config_file_path() -> String {
     env::var("IRRIGATION_CONFIG_PATH").unwrap_or_else(|e| {
         tracing::debug!("Failed to read environment variable: {e}");
-        "config.json".to_string()
+        "config.yaml".to_string()
     })
 }
