@@ -13,5 +13,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: add armv7-unknown-linux-gnueabihf
+        run: rustup target add armv7-unknown-linux-gnueabihf
       - name: compile
         run: cargo build --release --target armv7-unknown-linux-gnueabihf
+      - name: Checkout the repository
+        uses: actions/checkout@master
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.rusty-irrigation-system-release }}
+        with:
+          args: "target/armv7-unknown-linux-gnueabihf/rusty_irrigation-system"
