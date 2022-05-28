@@ -29,6 +29,6 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
-          files: "target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation-system"
+          files: "target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
