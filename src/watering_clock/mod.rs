@@ -4,7 +4,7 @@ use chrono::{self, Timelike};
 use tokio::{sync::mpsc, task::JoinHandle, time::Interval};
 use tracing::{info_span, instrument::Instrumented, Instrument};
 
-use crate::{config::WateringClockConfig, valve_controller::ValveControllerMessage};
+use crate::{config::WateringClockConfig, gpio_controller::task::TxGpioControllerMessage};
 
 use chrono::NaiveTime;
 
@@ -38,7 +38,7 @@ impl WateringClock {
     /// tx: The valve controller's tx channel
     pub async fn start(
         &self,
-        tx: mpsc::Sender<ValveControllerMessage>,
+        tx: mpsc::Sender<TxGpioControllerMessage>,
     ) -> Result<Instrumented<JoinHandle<()>>, WateringClockError> {
         let start_event = get_when_next_time_occurrence(self.start_watering_time)?;
         let end_event = get_when_next_time_occurrence(self.start_watering_time + self.duration)?;
@@ -51,13 +51,13 @@ impl WateringClock {
             loop {
                 open_valve_time.tick().await;
                 tracing::info!("Opening Valve");
-                if let Err(e) = tx.send(ValveControllerMessage::Open).await {
+                if let Err(e) = tx.send(TxGpioControllerMessage::SetHigh).await {
                     tracing::error!("Error sending open valve command: {}", e);
                     continue;
                 }
                 close_valve_time.tick().await;
                 tracing::info!("Closing Valve");
-                if let Err(e) = tx.send(ValveControllerMessage::Close).await {
+                if let Err(e) = tx.send(TxGpioControllerMessage::SetLow).await {
                     tracing::error!("Error sending close valve command: {}", e);
                     continue;
                 }
