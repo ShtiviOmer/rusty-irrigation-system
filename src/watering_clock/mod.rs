@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use chrono::{self, Timelike};
+use chrono::{self, ParseError, Timelike};
 use tokio::{sync::mpsc, task::JoinHandle, time::Interval};
 use tracing::{info_span, instrument::Instrumented, Instrument};
 
@@ -9,6 +9,7 @@ use crate::{config::WateringClockConfig, gpio_controller::task::TxGpioController
 use chrono::NaiveTime;
 
 /// The watering clock is a task that will send valve commands to the valve controller based on time
+#[cfg_attr(test, derive(Eq, PartialEq, Debug))]
 pub struct WateringClock {
     /// The interval at which to send valve commands in hours, example once a day
     interval: chrono::Duration,
@@ -22,8 +23,7 @@ impl TryFrom<WateringClockConfig> for WateringClock {
     type Error = WateringClockError;
 
     fn try_from(value: WateringClockConfig) -> Result<Self, Self::Error> {
-        let start_watering_time = NaiveTime::from_str(&value.start_time)
-            .map_err(|e| WateringClockError::FailedLoadConfigError(e.to_string()))?;
+        let start_watering_time = NaiveTime::from_str(&value.start_time)?;
         let duration = chrono::Duration::minutes(value.duration);
         let interval = chrono::Duration::hours(value.interval);
         Ok(Self {
@@ -105,7 +105,13 @@ fn get_interval_by_duration(
 #[derive(Debug)]
 pub enum WateringClockError {
     StartClockError(String),
-    FailedLoadConfigError(String),
+    FailedLoadConfigError(ParseError),
+}
+
+impl From<ParseError> for WateringClockError {
+    fn from(value: ParseError) -> Self {
+        WateringClockError::FailedLoadConfigError(value)
+    }
 }
 
 impl std::error::Error for WateringClockError {}
@@ -117,6 +123,41 @@ impl fmt::Display for WateringClockError {
             WateringClockError::FailedLoadConfigError(e) => {
                 write!(f, "Error loading config: {}", e)
             }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_watering_clock_valid_config() {
+        let config = WateringClockConfig {
+            interval: 1,
+            start_time: "09:00:00".to_string(),
+            duration: 1,
+        };
+        let results = WateringClock::try_from(config).unwrap();
+        let expected = WateringClock {
+            interval: chrono::Duration::hours(1),
+            start_watering_time: NaiveTime::from_str("09:00:00").unwrap(),
+            duration: chrono::Duration::minutes(1),
+        };
+        assert_eq!(results, expected);
+    }
+
+    #[test]
+    fn test_watering_clock_invalid_config() {
+        let config = WateringClockConfig {
+            interval: 1,
+            start_time: "some".to_string(),
+            duration: 1,
+        };
+        let results = WateringClock::try_from(config).unwrap_err();
+        match results {
+            WateringClockError::FailedLoadConfigError(_) => (),
+            _ => panic!("Expected StartClockError"),
         }
     }
 }
