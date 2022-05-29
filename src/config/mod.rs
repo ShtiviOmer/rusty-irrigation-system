@@ -8,6 +8,9 @@ pub struct Config {
     pub platform: Platform,
     pub watering_clock: WateringClockConfig,
     pub gpio_pins: u8,
+    // support for versioning of the config file, might be useful for breaking changes
+    #[serde(rename = "version")]
+    pub _version: u32,
 }
 
 pub fn load_from_yaml(path: String) -> Result<Config, ConfigError> {
@@ -61,6 +64,7 @@ mod tests {
     fn test_example_file() {
         let results = load_from_yaml("example_config.yaml".to_owned()).unwrap();
         let expected = Config {
+            _version: 1,
             platform: Platform::RaspberryPie,
             watering_clock: WateringClockConfig {
                 start_time: "05:00:00".to_owned(),

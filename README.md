@@ -10,6 +10,7 @@ Create a file in the same directory called config.yaml
 ``` yaml
 valve_type: RaspberryPie
 gpio_pins: 4
+version: 1
 watering_clock:
   start_time: 05:00:00
   duration: 30
@@ -21,8 +22,8 @@ chmod a+x rusty_irrigation_system
 ```
 
 ## Dev
-In order to compile the code, we need a different target:
-First we need to add [cross](https://github.com/cross-rs/cross)
+In order to compile the code, needs a different target:
+First add [cross](https://github.com/cross-rs/cross)
 Best to follow this [guide](https://amritrathie.vercel.app/posts/2020/03/06/cross-compiling-rust-from-macos-to-raspberry-pi/) which worked for me
 Afterwards, we can run commands:
 ```
