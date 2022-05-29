@@ -156,7 +156,7 @@ mod tests {
         };
         let results = WateringClock::try_from(config).unwrap_err();
         match results {
-            WateringClockError::StartClockError(_) => (),
+            WateringClockError::FailedLoadConfigError(_) => (),
             _ => panic!("Expected StartClockError"),
         }
     }
