@@ -1,13 +1,13 @@
-use std::fmt;
+use std::{error, fmt};
 
-use crate::valve_controller::valve_trait::ValveTrait;
+use crate::gpio_controller::send_command_trait::GpioTx;
 use rppal::gpio::{Gpio, OutputPin};
 
-pub struct PieValve {
+pub struct RaspberryPie {
     valve_output: OutputPin,
 }
 
-impl PieValve {
+impl RaspberryPie {
     pub fn new(valve_pin_output: u8) -> Result<Self, PieValveError> {
         let gpio = Gpio::new().map_err(|e| PieValveError::PermissionDenied(e.to_string()))?;
         let valve_output = gpio
@@ -16,13 +16,17 @@ impl PieValve {
             .into_output();
         Ok(Self { valve_output })
     }
+
+    pub fn boxed_new(valve_pin_output: u8) -> Result<Box<dyn GpioTx + Sync + Send>, PieValveError> {
+        Ok(Box::new(Self::new(valve_pin_output)?))
+    }
 }
 
-impl ValveTrait for PieValve {
-    fn open(&mut self) {
+impl GpioTx for RaspberryPie {
+    fn set_high(&mut self) {
         self.valve_output.set_high();
     }
-    fn close(&mut self) {
+    fn set_low(&mut self) {
         self.valve_output.set_low();
     }
 }
@@ -40,3 +44,5 @@ impl fmt::Display for PieValveError {
         }
     }
 }
+
+impl error::Error for PieValveError {}

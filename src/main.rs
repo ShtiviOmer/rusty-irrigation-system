@@ -11,7 +11,7 @@ async fn main() {
     let config = match config::load_from_yaml(get_config_file_path()) {
         Ok(config) => config,
         Err(e) => {
-            eprintln!("Failed to load config: {}", e);
+            eprintln!("Failed to load config: {:?}", e);
             process::exit(1);
         }
     };

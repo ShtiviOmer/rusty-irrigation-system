@@ -1,30 +1,29 @@
 pub mod config;
-mod valve_controller;
-mod valves;
+mod gpio_controller;
+mod platforms;
 mod watering_clock;
 
-use crate::valve_controller::start as valve_controller_start;
+use crate::gpio_controller::task::start as valve_controller_start;
 
-use config::{Config, ValveType};
+use config::{Config, Platform};
 use tokio::sync::mpsc;
 use watering_clock::WateringClock;
 
-use crate::valve_controller::valve_trait::ValveTrait;
-use crate::valves::rasberrypie::PieValve;
+use crate::platforms::rasberrypie::RaspberryPie;
 
-use valves::mock_valve::{MockValve, MockValveAction};
+use platforms::mock::MockPlatform;
 
 use std::error::Error;
 
 pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let mut handles = Vec::new();
 
-    let valve = match config.get_valve_type() {
-        ValveType::RaspberryPie => get_valve_raspberry_pie(config.gpio_pins)?,
-        ValveType::Mock => {
+    let valve = match config.platform {
+        Platform::RaspberryPie => RaspberryPie::boxed_new(config.gpio_pins)?,
+        Platform::Mock => {
             let (tx, rx) = mpsc::channel(100);
-            handles.push(MockValve::log_valve_commands(rx));
-            get_valve_mock(tx)
+            handles.push(MockPlatform::log_valve_commands(rx));
+            MockPlatform::boxed_new(tx)
         }
     };
 
@@ -34,14 +33,4 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     futures::future::join_all(handles).await;
     Ok(())
-}
-
-fn get_valve_raspberry_pie(gpio_pins: u8) -> Result<Box<dyn ValveTrait + Sync + Send>, String> {
-    Ok(Box::new(
-        PieValve::new(gpio_pins).map_err(|e| e.to_string())?,
-    ))
-}
-
-fn get_valve_mock(tx: mpsc::Sender<MockValveAction>) -> Box<dyn ValveTrait + Sync + Send> {
-    Box::new(MockValve::new(tx))
 }
