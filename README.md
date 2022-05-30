@@ -4,8 +4,8 @@ For now, runs only on Raspberry-Pie (tested with zero 2 w), more platforms are w
 Allow you to open a single valve (more features to come, multi-valve, etc')
 
 ## How to use
-Download latest [release](https://github.com/ShtiviOmer/rusty_irrigation-system/releases/latest)
-copy it to your Raspberry-Pie
+Download latest [release](https://github.com/ShtiviOmer/rusty_irrigation-system/releases/latest).
+Copy it to your Raspberry-Pie.
 Create a file in the same directory called config.yaml
 ``` yaml
 valve_type: RaspberryPie
@@ -19,6 +19,11 @@ watering_clock:
 make the rusty-irrigation-system executable:
 ``` bash
 chmod a+x rusty_irrigation_system
+```
+
+Run the executable:
+``` bash
+./rusty_irrigation_system
 ```
 
 ## Dev

@@ -7,3 +7,6 @@
 
 # app config file
 config.yaml
+
+# No dev containers
+.devcontainer/
