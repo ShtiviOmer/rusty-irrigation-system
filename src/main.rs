@@ -1,9 +1,10 @@
+use rocket;
 use rusty_irrigation_system::config;
 use std::env;
 use std::process;
 use tracing::info;
 
-#[tokio::main]
+#[rocket::main]
 async fn main() {
     start_tracing();
     info!("Starting...");
