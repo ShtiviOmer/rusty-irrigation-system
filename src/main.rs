@@ -1,10 +1,11 @@
-use rocket;
 use rusty_irrigation_system::config;
 use std::env;
 use std::process;
 use tracing::info;
 
-#[rocket::main]
+// #[rocket::main]
+#[tokio::main]
+// async fn main() -> Result<(), rocket::Error> {
 async fn main() {
     start_tracing();
     info!("Starting...");
@@ -16,11 +17,11 @@ async fn main() {
             process::exit(1);
         }
     };
-
     if let Err(e) = rusty_irrigation_system::run(config).await {
         eprintln!("{}", e);
         process::exit(1);
     }
+    // Ok(())
 }
 
 fn start_tracing() {
