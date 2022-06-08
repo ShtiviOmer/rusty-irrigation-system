@@ -21,6 +21,7 @@ pub fn start(mut platform: Box<dyn GpioTx + Send + Sync>) -> mpsc::Sender<TxGpio
 }
 
 #[derive(Debug)]
+#[cfg_attr(test, derive(Eq, PartialEq))]
 pub enum TxGpioControllerMessage {
     SetHigh,
     SetLow,

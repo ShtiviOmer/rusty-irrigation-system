@@ -25,7 +25,7 @@ async fn close(valve_channel: &State<Sender<TxGpioControllerMessage>>) -> Json<M
     send_valve_command(
         valve_channel,
         TxGpioControllerMessage::SetLow,
-        "Valve closed".to_string(),
+        "Valve Closed".to_string(),
         "Failed to close valve".to_string(),
     )
     .await
@@ -48,5 +48,52 @@ async fn send_valve_command(
             message: message_failure,
             error: Some(format!("{}", e)),
         }),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rocket::http::Status;
+    use rocket::local::blocking::Client;
+    use tokio::sync::mpsc;
+
+    #[test]
+    fn test_open() {
+        assert_valve_message(
+            "/valve/open",
+            crate::web_server::Status::Success,
+            TxGpioControllerMessage::SetHigh,
+            "Valve Opened".to_string(),
+        );
+    }
+
+    #[test]
+    fn test_close() {
+        assert_valve_message(
+            "/valve/close",
+            crate::web_server::Status::Success,
+            TxGpioControllerMessage::SetLow,
+            "Valve Closed".to_string(),
+        );
+    }
+
+    fn assert_valve_message(
+        valve_uri: &str,
+        status: crate::web_server::Status,
+        valve_message: TxGpioControllerMessage,
+        message: String,
+    ) {
+        let (sender, mut receiver) = mpsc::channel(100);
+        let server = crate::web_server::rocket(sender);
+
+        let client = Client::tracked(server).unwrap();
+        let response = client.get(valve_uri).dispatch();
+        assert_eq!(response.status(), Status::Ok);
+        let results: Message = response.into_json().unwrap();
+        let expected = Message::new(status, message, None);
+        assert_eq!(results, expected);
+        let result_message = receiver.try_recv().unwrap();
+        assert_eq!(result_message, valve_message);
     }
 }
