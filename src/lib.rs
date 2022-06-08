@@ -2,6 +2,7 @@ pub mod config;
 mod gpio_controller;
 mod platforms;
 mod watering_clock;
+mod web_server;
 
 use crate::gpio_controller::task::start as valve_controller_start;
 
@@ -29,8 +30,8 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let tx = valve_controller_start(valve);
     let watering_clock = WateringClock::try_from(config.watering_clock)?;
-    handles.push(watering_clock.start(tx).await.map_err(Box::new)?);
+    handles.push(watering_clock.start(tx.clone()).await.map_err(Box::new)?);
 
-    futures::future::join_all(handles).await;
+    web_server::start(tx.clone()).await?;
     Ok(())
 }
