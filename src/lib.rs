@@ -32,7 +32,7 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let watering_clock = WateringClock::try_from(config.watering_clock)?;
     handles.push(watering_clock.start(tx.clone()).await.map_err(Box::new)?);
 
-    let server = web_server::rocket(tx.clone());
+    let server = web_server::backend::rocket(tx.clone());
     let _ = server.launch().await?;
     Ok(())
 }
