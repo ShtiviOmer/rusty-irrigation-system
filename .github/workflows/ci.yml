@@ -19,7 +19,7 @@ jobs:
           node-version: 18
 
       - name: Install dependencies
-        run: npm install
+        run: npm install --prefix src/web_server/frontend
 
       - name: Build React code
         run: npm run build --prefix src/web_server/frontend
