@@ -17,13 +17,17 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18
-      - name: Build
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build React code
         run: npm run build --prefix src/web_server/frontend
-      - name: Build
-        run: cargo build --verbose
+      - name: Build Rust code
+        run: cargo build
       - name: fmt check
         run: cargo fmt --all --check
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test
       - name: clippy
         run: cargo clippy
