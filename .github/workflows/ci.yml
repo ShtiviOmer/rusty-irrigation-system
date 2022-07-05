@@ -13,6 +13,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - name: Build
+        run: npm run build
       - name: Build
         run: cargo build --verbose
       - name: fmt check
