@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 18
       - name: Build
-        run: npm run build
+        run: npm run build --prefix src/web_server/frontend
       - name: Build
         run: cargo build --verbose
       - name: fmt check
