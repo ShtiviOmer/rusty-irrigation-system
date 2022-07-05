@@ -20,24 +20,6 @@ pub fn rocket(valve_channel: Sender<TxGpioControllerMessage>) -> Rocket<Build> {
         )
 }
 
-// #[get("/")]
-// async fn index() -> io::Result<NamedFile> {
-//     let page_directory_path = format!(
-//         "{}/src/web_server/frontend/build",
-//         env!("CARGO_MANIFEST_DIR")
-//     );
-//     NamedFile::open(Path::new(&page_directory_path).join("index.html")).await
-// }
-
-// #[get("/<file..>")]
-// async fn files(file: PathBuf) -> io::Result<NamedFile> {
-//     let page_directory_path = format!(
-//         "{}/src/web_server/frontend/build",
-//         env!("CARGO_MANIFEST_DIR")
-//     );
-//     NamedFile::open(Path::new(&page_directory_path).join(file)).await
-// }
-
 #[derive(Debug, Serialize)]
 #[cfg_attr(test, derive(Eq, PartialEq, Deserialize))]
 struct Message {
