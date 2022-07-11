@@ -10,14 +10,11 @@ use tokio::sync::mpsc::Sender;
 
 use crate::gpio_controller::task::TxGpioControllerMessage;
 
-pub fn rocket(valve_channel: Sender<TxGpioControllerMessage>) -> Rocket<Build> {
+pub fn start(valve_channel: Sender<TxGpioControllerMessage>) -> Rocket<Build> {
     rocket::build()
         .manage(valve_channel)
         .mount("/valve/", valve::get_routes())
-        .mount(
-            "/",
-            FileServer::from(relative!("/src/web_server/frontend/build")),
-        )
+        .mount("/", FileServer::from(relative!("/build")))
 }
 
 #[derive(Debug, Serialize)]

@@ -12,7 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install --prefix src/web_server/frontend
+
+      - name: Build React code
+        run: npm run build --prefix src/web_server/frontend
       - name: Install rust
         uses: actions-rs/toolchain@v1
         with:
@@ -29,6 +39,8 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
-          files: "target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system"
+          files: |
+            "target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system"
+            build/.*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

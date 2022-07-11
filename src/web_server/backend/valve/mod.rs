@@ -85,7 +85,7 @@ mod tests {
         message: String,
     ) {
         let (sender, mut receiver) = mpsc::channel(100);
-        let server = crate::web_server::backend::rocket(sender);
+        let server = crate::web_server::backend::start(sender);
 
         let client = Client::tracked(server).unwrap();
         let response = client.post(valve_uri).dispatch();
