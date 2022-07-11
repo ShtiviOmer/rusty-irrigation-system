@@ -1,4 +1,4 @@
-use rocket::{get, routes, serde::json::Json, State};
+use rocket::{post, routes, serde::json::Json, State};
 use tokio::sync::mpsc::Sender;
 
 use crate::gpio_controller::task::TxGpioControllerMessage;
@@ -9,7 +9,7 @@ pub fn get_routes() -> Vec<rocket::Route> {
     routes![open, close]
 }
 
-#[get("/open")]
+#[post("/open")]
 async fn open(valve_channel: &State<Sender<TxGpioControllerMessage>>) -> Json<Message> {
     send_valve_command(
         valve_channel,
@@ -20,7 +20,7 @@ async fn open(valve_channel: &State<Sender<TxGpioControllerMessage>>) -> Json<Me
     .await
 }
 
-#[get("/close")]
+#[post("/close")]
 async fn close(valve_channel: &State<Sender<TxGpioControllerMessage>>) -> Json<Message> {
     send_valve_command(
         valve_channel,
@@ -62,7 +62,7 @@ mod tests {
     fn test_open() {
         assert_valve_message(
             "/valve/open",
-            crate::web_server::Status::Success,
+            crate::web_server::backend::Status::Success,
             TxGpioControllerMessage::SetHigh,
             "Valve Opened".to_string(),
         );
@@ -72,7 +72,7 @@ mod tests {
     fn test_close() {
         assert_valve_message(
             "/valve/close",
-            crate::web_server::Status::Success,
+            crate::web_server::backend::Status::Success,
             TxGpioControllerMessage::SetLow,
             "Valve Closed".to_string(),
         );
@@ -80,15 +80,15 @@ mod tests {
 
     fn assert_valve_message(
         valve_uri: &str,
-        status: crate::web_server::Status,
+        status: crate::web_server::backend::Status,
         valve_message: TxGpioControllerMessage,
         message: String,
     ) {
         let (sender, mut receiver) = mpsc::channel(100);
-        let server = crate::web_server::rocket(sender);
+        let server = crate::web_server::backend::start(sender);
 
         let client = Client::tracked(server).unwrap();
-        let response = client.get(valve_uri).dispatch();
+        let response = client.post(valve_uri).dispatch();
         assert_eq!(response.status(), Status::Ok);
         let results: Message = response.into_json().unwrap();
         let expected = Message::new(status, message, None);

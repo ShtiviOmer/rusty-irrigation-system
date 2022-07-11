@@ -13,11 +13,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Build
-        run: cargo build --verbose
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install --prefix src/web_server/frontend
+
+      - name: Build React code
+        run: npm run build --prefix src/web_server/frontend
+      - name: Build Rust code
+        run: cargo build
       - name: fmt check
         run: cargo fmt --all --check
       - name: Run tests
-        run: cargo test --verbose
+        run: cargo test
       - name: clippy
         run: cargo clippy
