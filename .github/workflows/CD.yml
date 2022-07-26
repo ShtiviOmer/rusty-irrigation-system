@@ -36,12 +36,12 @@ jobs:
           use-cross: true
           command: build
           args: --release --target armv7-unknown-linux-gnueabihf
-      - name: Compress action step
+      - name: Compress
         uses: a7ul/tar-action@v1.1.0
         id: compress
         with:
           files: |
-            "target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system"
+            target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system
           outPath: rusty_irrigation_system.tar.gz
       - name: Publish
         uses: softprops/action-gh-release@v1
