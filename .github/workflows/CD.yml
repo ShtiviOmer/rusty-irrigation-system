@@ -36,13 +36,17 @@ jobs:
           use-cross: true
           command: build
           args: --release --target armv7-unknown-linux-gnueabihf
+      - name: Copy
+        run: |
+          cp target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system rusty_irrigation_system
       - name: Compress
         uses: a7ul/tar-action@v1.1.0
         id: compress
         with:
           command: c
           files: |
-            target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system
+            rusty_irrigation_system
+            build
           outPath: rusty_irrigation_system.tar.gz
       - name: Publish
         uses: softprops/action-gh-release@v1
