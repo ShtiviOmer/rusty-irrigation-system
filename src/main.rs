@@ -3,7 +3,7 @@ use std::env;
 use std::process;
 use tracing::info;
 
-#[rocket::main]
+#[tokio::main]
 async fn main() {
     start_tracing();
     info!("Starting...");
