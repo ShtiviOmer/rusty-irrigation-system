@@ -6,8 +6,7 @@ use serde::Deserialize;
 #[cfg_attr(test, derive(Eq, PartialEq))]
 pub struct Config {
     pub platform: Platform,
-    pub watering_clock: WateringClockConfig,
-    pub gpio_pins: u8,
+    pub watering_clocks: Vec<WateringClockConfig>,
     // support for versioning of the config file, might be useful for breaking changes
     #[serde(rename = "version")]
     pub _version: u32,
@@ -37,24 +36,15 @@ pub struct WateringClockConfig {
     pub duration: i64,
     /// Interval of when opening the clock in hours
     pub interval: i64,
+    pub gpio_pin: u8,
 }
 
-#[derive(Debug)]
+#[derive(Debug, thiserror::Error)]
 pub enum ConfigError {
-    Yaml(serde_yaml::Error),
-    Io(std::io::ErrorKind),
-}
-
-impl From<serde_yaml::Error> for ConfigError {
-    fn from(err: serde_yaml::Error) -> Self {
-        ConfigError::Yaml(err)
-    }
-}
-
-impl From<std::io::Error> for ConfigError {
-    fn from(err: std::io::Error) -> Self {
-        ConfigError::Io(err.kind())
-    }
+    #[error("Failed to parse YAML: {0}")]
+    Yaml(#[from] serde_yaml::Error),
+    #[error("Failed to read file: {0}")]
+    Io(#[from] std::io::Error),
 }
 
 #[cfg(test)]
@@ -66,12 +56,12 @@ mod tests {
         let expected = Config {
             _version: 1,
             platform: Platform::RaspberryPie,
-            watering_clock: WateringClockConfig {
+            watering_clocks: vec![WateringClockConfig {
                 start_time: "05:00:00".to_owned(),
                 duration: 30,
                 interval: 24,
-            },
-            gpio_pins: 4,
+                gpio_pin: 4,
+            }],
         };
 
         assert_eq!(results, expected);
@@ -81,7 +71,7 @@ mod tests {
     fn test_example_file_not_found() {
         let err = load_from_yaml("missing_file.yaml".to_owned()).unwrap_err();
         match err {
-            ConfigError::Io(std::io::ErrorKind::NotFound) => (),
+            ConfigError::Io(_) => (),
             _ => panic!("Expected NotFound error"),
         }
     }
