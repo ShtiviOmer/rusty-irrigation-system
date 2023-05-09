@@ -50,7 +50,7 @@ impl WateringClock {
         Ok(tokio::spawn(async move {
             loop {
                 open_valve_time.tick().await;
-                tracing::info!("Opening Valve");
+                tracing::info!("Opening Valve, sending command");
                 if let Err(e) = tx.send(TxGpioControllerMessage::SetHigh).await {
                     tracing::error!("Error sending open valve command: {}", e);
                     continue;
@@ -137,6 +137,7 @@ mod tests {
             interval: 1,
             start_time: "09:00:00".to_string(),
             duration: 1,
+            gpio_pin: 4,
         };
         let results = WateringClock::try_from(config).unwrap();
         let expected = WateringClock {
@@ -153,6 +154,7 @@ mod tests {
             interval: 1,
             start_time: "some".to_string(),
             duration: 1,
+            gpio_pin: 4,
         };
         let results = WateringClock::try_from(config).unwrap_err();
         match results {

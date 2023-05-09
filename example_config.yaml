@@ -1,7 +1,8 @@
 platform: RaspberryPie
-gpio_pins: 4
+
 version: 1
-watering_clock:
-  start_time: 05:00:00
-  duration: 30
-  interval: 24
+watering_clocks:
+  - start_time: 05:00:00
+    duration: 30
+    interval: 24
+    gpio_pin: 4

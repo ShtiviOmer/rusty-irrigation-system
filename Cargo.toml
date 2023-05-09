@@ -3,10 +3,9 @@ name = "rusty_irrigation_system"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rppal = "0.13.1"
+rppal = "0.14.1"
 tokio = { version = "1", features = [
     "rt",
     "time",
@@ -19,7 +18,8 @@ tracing = { version = "0.1", features = ["log", "std"] }
 tracing-subscriber = { version = "0.3", features = ["fmt"] }
 futures = "0.3"
 serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.8"
+serde_yaml = "0"
+thiserror = "1.0.40"
 
 [dev-dependencies]
 tokio = { version = "1", features = ["full"] }
