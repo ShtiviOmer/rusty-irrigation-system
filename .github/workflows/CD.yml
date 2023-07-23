@@ -34,19 +34,20 @@ jobs:
       - name: Copy
         run: |
           cp target/armv7-unknown-linux-gnueabihf/release/rusty_irrigation_system rusty_irrigation_system
-      - name: Compress
-        uses: a7ul/tar-action@v1.1.0
-        id: compress
-        with:
-          command: c
-          files: |
-            rusty_irrigation_system
-            build
-          outPath: rusty_irrigation_system.tar.gz
+      # - name: Compress
+      #   uses: a7ul/tar-action@v1.1.0
+      #   id: compress
+      #   with:
+      #     command: c
+      #     files: |
+      #       rusty_irrigation_system
+      #       build
+      #     outPath: rusty_irrigation_system.tar.gz
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
+          # rusty_irrigation_system.tar.gz
           files: |
-            rusty_irrigation_system.tar.gz
+            rusty_irrigation_system
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
