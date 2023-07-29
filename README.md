@@ -8,13 +8,15 @@ Download latest [release](https://github.com/ShtiviOmer/rusty_irrigation-system/
 Copy it to your Raspberry-Pie.
 Create a file in the same directory called config.yaml
 ``` yaml
-valve_type: RaspberryPie
-gpio_pins: 4
+platform: RaspberryPie
+
 version: 1
-watering_clock:
-  start_time: 05:00:00
-  duration: 30
-  interval: 24
+watering_clocks:
+  - start_time: 05:00:00
+    duration: 30
+    interval: 24
+    gpio_pin: 4
+
 ```
 make the rusty-irrigation-system executable:
 ``` bash
