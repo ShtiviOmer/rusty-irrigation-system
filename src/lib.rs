@@ -24,7 +24,7 @@ pub async fn run(config: Config) -> Result<(), Box<dyn Error>> {
             Platform::RaspberryPie => RaspberryPie::boxed_new(clock.gpio_pin)?,
             Platform::Mock => {
                 let (tx, rx) = mpsc::channel(100);
-                MockPlatform::log_valve_commands(rx);
+                MockPlatform::log_valve_commands(rx).await;
                 MockPlatform::boxed_new(tx)
             }
         };
