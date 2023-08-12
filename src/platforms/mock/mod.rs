@@ -1,6 +1,6 @@
 use crate::gpio_controller::send_command_trait::GpioTx;
-use tokio::{sync::mpsc, task::JoinHandle};
-use tracing::{info_span, instrument::Instrumented, Instrument};
+use tokio::sync::mpsc;
+use tracing::{info_span, Instrument};
 
 pub struct MockPlatform {
     valve_output: mpsc::Sender<MockPlatformMessage>,
@@ -15,9 +15,7 @@ impl MockPlatform {
         Box::new(Self::new(valve_output))
     }
     /// Log all platform commands to the valve output channel
-    pub fn log_valve_commands(
-        mut rx: mpsc::Receiver<MockPlatformMessage>,
-    ) -> Instrumented<JoinHandle<()>> {
+    pub async fn log_valve_commands(mut rx: mpsc::Receiver<MockPlatformMessage>) {
         tokio::spawn(async move {
             while let Some(valve_action) = rx.recv().await {
                 match valve_action {
@@ -31,6 +29,8 @@ impl MockPlatform {
             }
         })
         .instrument(info_span!("mock_valve"))
+        .await
+        .unwrap();
     }
 }
 
