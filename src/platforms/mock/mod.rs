@@ -11,7 +11,9 @@ impl MockPlatform {
     pub fn new(valve_output: mpsc::Sender<MockPlatformMessage>) -> Self {
         Self { valve_output }
     }
-    pub fn boxed_new(valve_output: mpsc::Sender<MockPlatformMessage>) -> Box<Self> {
+    pub fn boxed_new(
+        valve_output: mpsc::Sender<MockPlatformMessage>,
+    ) -> Box<dyn GpioTx + Send + Sync> {
         Box::new(Self::new(valve_output))
     }
     /// Log all platform commands to the valve output channel
